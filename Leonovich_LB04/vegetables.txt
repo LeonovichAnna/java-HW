@@ -1,0 +1,6 @@
+Tomato; 20; 150; Red
+Cabbage; 25; 300; Green
+Carrot; 41; 200; 15
+InvalidVegetable; abc; -50;
+Cucumber; 15; 100; Green
+BadTomato; -15; -100; 5.0
