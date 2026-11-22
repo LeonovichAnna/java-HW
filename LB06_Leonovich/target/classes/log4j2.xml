@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <!-- директория логов -->
+        <Property name="LOG_DIR">logs</Property>
+        <Property name="ARCHIVE_DIR">logs/archive</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- консоль с цветами по уровню -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}
+                    {FATAL=red blink, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=white}</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <!-- файл для info и ниже (debug, trace) -->
+        <RollingFile name="InfoFile"
+                     fileName="${LOG_DIR}/app-info.log"
+                     filePattern="${ARCHIVE_DIR}/app-info-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- файл только для warn -->
+        <RollingFile name="WarnFile"
+                     fileName="${LOG_DIR}/app-warn.log"
+                     filePattern="${ARCHIVE_DIR}/app-warn-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- файл только для error и fatal -->
+        <RollingFile name="ErrorFile"
+                     fileName="${LOG_DIR}/app-error.log"
+                     filePattern="${ARCHIVE_DIR}/app-error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- фильтры по уровню для каждого файла -->
+        <Logger name="com.airport" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="InfoFile">
+                <LevelRangeFilter minLevel="DEBUG" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="WarnFile">
+                <LevelRangeFilter minLevel="WARN" maxLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="ErrorFile">
+                <LevelRangeFilter minLevel="ERROR" maxLevel="FATAL" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+        </Logger>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
